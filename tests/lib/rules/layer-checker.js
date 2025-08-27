@@ -48,7 +48,7 @@ ruleTester.run("layer-checker", rule, {
     },
     {
       code: `
-        import { FC, memo } from 'react';
+        import { type FC, memo } from 'react';
         import { useTranslation } from 'react-i18next';
         import { useSelector } from 'react-redux';
 
