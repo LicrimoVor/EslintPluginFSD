@@ -1,22 +1,17 @@
-/**
- * @fileoverview  
- * @author licrimovor
- */
-"use strict";
-
 //------------------------------------------------------------------------------
 // Requirements
 //------------------------------------------------------------------------------
 
-const requireIndex = require("requireindex");
+import requireIndex from "requireindex";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 //------------------------------------------------------------------------------
 // Plugin Definition
 //------------------------------------------------------------------------------
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// import all rules in lib/rules
-module.exports.rules = requireIndex(__dirname + "/rules");
-
+export const rules = requireIndex(path.join(dirname, "rules"));
 
 

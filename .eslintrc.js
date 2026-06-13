@@ -1,6 +1,4 @@
-"use strict";
-
-module.exports = {
+export default {
   root: true,
   extends: [
     "eslint:recommended",
@@ -10,15 +8,17 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
+    ecmaVersion: "latest",
     sourceType: "module",
-    ecmaVersion: 2020
+    project: "./tsconfig.json",
+    tsconfigRootDir: __dirname,
   },
   env: {
     node: true,
   },
   overrides: [
     {
-      files: ["tests/**/*.js"],
+      files: ["tests/**/*.ts"],
       env: { mocha: true },
     },
   ],

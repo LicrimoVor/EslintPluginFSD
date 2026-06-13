@@ -1,25 +1,23 @@
-/**
- * @fileoverview  
- * @author LicrimoVor
- */
-"use strict";
+import { RuleTester } from "eslint";
+import * as parser from "@typescript-eslint/parser";
 
-//------------------------------------------------------------------------------
-// Requirements
-//------------------------------------------------------------------------------
-
-const rule = require("../../../lib/rules/order-imports"),
-  RuleTester = require("eslint").RuleTester;
-
+import { rules } from "../../src/rules/order-imports"
 
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
 
 const ruleTester = new RuleTester({
-  parserOptions: {ecmaVersion: 6, sourceType: 'module'}
+  languageOptions: {
+    parser,
+    parserOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+    },
+  },
 });
-ruleTester.run("order-imports", rule, {
+
+ruleTester.run("order-imports", rules, {
   valid: [
     {
       code: `
@@ -30,7 +28,6 @@ ruleTester.run("order-imports", rule, {
       import {reducer} from '../model/slice/componentSlice';
       import cls from './Component.module.scss';
       `,
-      errors: [],
       options: [
         {
           alias: '@',
@@ -47,7 +44,6 @@ ruleTester.run("order-imports", rule, {
       import {reducer} from '../model/slice/componentSlice';
       import cls from './Component.module.scss';
       `,
-      errors: [],
     },
   ],
 

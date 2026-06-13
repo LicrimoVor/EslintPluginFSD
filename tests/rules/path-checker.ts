@@ -1,35 +1,32 @@
-/**
- * @fileoverview  
- * @author licrimovor
- */
-"use strict";
+import { RuleTester } from "eslint";
+import * as parser from "@typescript-eslint/parser";
 
-//------------------------------------------------------------------------------
-// Requirements
-//------------------------------------------------------------------------------
-
-const rule = require("../../../lib/rules/path-checker"),
-  RuleTester = require("eslint").RuleTester;
-
+import {rules} from "../../src/rules/path-checker"
 
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
 
 const ruleTester = new RuleTester({
-    parserOptions: {ecmaVersion: 6, sourceType: 'module'}
+  languageOptions: {
+    parser,
+    parserOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+    },
+  },
 });
-ruleTester.run("path-checker", rule, {
+
+
+ruleTester.run("path-checker", rules, {
   valid: [
     {
       filename: 'C:\\Users\\Lic\\Desktop\\javascript\\production_project\\src\\entities\\Article',
       code: "import { addCommentFormActions, addCommentFormReducer } from '../../model/slices/addCommentFormSlice'",
-      errors: [],
     },
     {
       filename: 'D:\\Code\\TypeScripts\\frontend_learn\\src\\shared\\lib\\components\\ThemeProvider\\ThemeProvider.tsx',
       code: "import { useJsonSettings } from '@/entities/User';",
-      errors: [],
     },
   ],
 

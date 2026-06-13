@@ -1,41 +1,60 @@
 {
-  "name": "eslint-plugin-lkx-fsd",
-  "version": "0.1.20",
-  "description": " ",
-  "keywords": [
-    "eslint",
-    "eslintplugin",
-    "eslint-plugin"
-  ],
-  "author": "licrimovor",
-  "main": "./lib/index.js",
-  "exports": "./lib/index.js",
-  "scripts": {
-    "lint": "npm-run-all \"lint:*\"",
-    "lint:eslint-docs": "npm-run-all \"update:eslint-docs -- --check\"",
-    "lint:js": "eslint .",
-    "test": "mocha tests --recursive",
-    "update:eslint-docs": "eslint-doc-generator"
-  },
-  "dependencies": {
-    "micromatch": "^4.0.5",
-    "requireindex": "^1.2.0"
-  },
-  "devDependencies": {
-    "@typescript-eslint/parser": "^8.41.0",
-    "eslint": "^8.19.0",
-    "eslint-doc-generator": "^1.0.0",
-    "eslint-plugin-eslint-plugin": "^5.0.0",
-    "eslint-plugin-node": "^11.1.0",
-    "mocha": "^10.0.0",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^5.9.2"
-  },
-  "engines": {
-    "node": "^14.17.0 || ^16.0.0 || >= 18.0.0"
-  },
-  "peerDependencies": {
-    "eslint": ">=7"
-  },
-  "license": "ISC"
+	"name": "eslint-plugin-lkx-fsd",
+	"version": "0.2.0",
+	"description": " ",
+	"keywords": [
+		"eslint",
+		"eslintplugin",
+		"eslint-plugin"
+	],
+	"author": "licrimovor",
+	"main": "./src/index.ts",
+	"exports": "./src/index.ts",
+	"scripts": {
+		"lint": "npm-run-all \"lint:*\"",
+		"lint:eslint-docs": "npm-run-all \"update:eslint-docs -- --check\"",
+		"lint:js": "eslint .",
+		"test": "mocha --require tsx/cjs \"tests/**/*.ts\"",
+		"update:eslint-docs": "eslint-doc-generator"
+	},
+	"dependencies": {
+		"@typescript-eslint/utils": "^8.61.0",
+		"micromatch": "^4.0.8",
+		"requireindex": "^1.2.0"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/eslint": "^9.6.1",
+		"@types/micromatch": "^4.0.10",
+		"@types/node": "^25.9.3",
+		"@types/requireindex": "^1.2.4",
+		"@typescript-eslint/eslint-plugin": "^8.61.0",
+		"@typescript-eslint/parser": "^8.61.0",
+		"eslint": "^10.5.0",
+		"eslint-doc-generator": "^3.6.0",
+		"eslint-plugin-eslint-plugin": "^7.4.0",
+		"eslint-plugin-n": "^18.1.0",
+		"mocha": "^11.7.6",
+		"npm-run-all": "^4.1.5",
+		"ts-declaration-location": "^1.0.7",
+		"ts-node": "^10.9.2",
+		"tsconfig-paths": "^4.2.0",
+		"tsx": "^4.22.4",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.61.0"
+	},
+	"engines": {
+		"node": "^14.17.0 || ^16.0.0 || >= 18.0.0"
+	},
+	"peerDependencies": {
+		"eslint": ">=10"
+	},
+	"overrides": {
+		"diff": "^9.0.0",
+		"serialize-javascript": "^7.0.5"
+	},
+	"license": "ISC",
+	"_moduleAliases": {
+		"@": "./src"
+	}
 }
