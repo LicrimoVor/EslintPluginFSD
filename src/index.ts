@@ -1,17 +1,16 @@
-//------------------------------------------------------------------------------
-// Requirements
-//------------------------------------------------------------------------------
+import { rules as layerChecker } from "./rules/layer-checker";
+import { rules as orderImports } from "./rules/order-imports";
+import { rules as pathChecker } from "./rules/path-checker";
+import { rules as publicImport } from "./rules/public-import";
 
-import requireIndex from "requireindex";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+export const rules = {
+	"layer-checker": layerChecker,
+	"order-imports": orderImports,
+	"path-checker": pathChecker,
+	"public-import": publicImport,
+};
 
-//------------------------------------------------------------------------------
-// Plugin Definition
-//------------------------------------------------------------------------------
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-
-export const rules = requireIndex(path.join(dirname, "rules"));
-
+export default {
+	rules,
+};
 

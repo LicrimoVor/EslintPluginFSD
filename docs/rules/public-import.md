@@ -1,35 +1,27 @@
-#   (`public-import`)
+# lkx-fsd/public-import
 
-Please describe the origin of the rule here.
+📝 Checking the import from the index.ts public.
+
+🔧 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
+
+<!-- end auto-generated rule header -->
+
+📝 Checking the import from the index.ts public.
+
+🔧 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
+
+<!-- end auto-generated rule header -->
 
 ## Rule Details
 
-This rule aims to...
-
-Examples of **incorrect** code for this rule:
-
-```js
-
-// fill me in
-
-```
-
-Examples of **correct** code for this rule:
-
-```js
-
-// fill me in
-
-```
-
 ### Options
 
-If there are any options, describe them here. Otherwise, delete this section.
-
-## When Not To Use It
-
-Give a short description of when it would be appropriate to turn off this rule.
-
-## Further Reading
-
-If there are other links that describe the issue this rule addresses, please include them here in a bulleted list.
+- `alias`: Alias used for absolute imports.
+- `otherIgnoreLayer`: Layers ignored for secondary public API checks.
+- `layersPlusOne`: Layers that include one extra public API segment.
+- `otherPublicImport`: Secondary public API segment name.
+- `otherPublicPatterns`: Filename patterns allowed to import secondary public APIs.
+- `sharedEnclosure`: Shared slices with enclosed public APIs.
+- `widgetEnclosure`: Widget slices with enclosed public APIs.
+- `featuresEnclosure`: Feature slices with enclosed public APIs.
+- `pageEnclosure`: Page slices with enclosed public APIs.

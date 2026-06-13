@@ -1,6 +1,6 @@
 {
 	"name": "eslint-plugin-lkx-fsd",
-	"version": "0.2.0",
+	"version": "0.2.3",
 	"description": " ",
 	"keywords": [
 		"eslint",
@@ -8,19 +8,31 @@
 		"eslint-plugin"
 	],
 	"author": "licrimovor",
-	"main": "./src/index.ts",
-	"exports": "./src/index.ts",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"docs",
+		"README.md"
+	],
 	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
 		"lint": "npm-run-all \"lint:*\"",
 		"lint:eslint-docs": "npm-run-all \"update:eslint-docs -- --check\"",
 		"lint:js": "eslint .",
+		"prepack": "npm run build",
 		"test": "mocha --require tsx/cjs \"tests/**/*.ts\"",
-		"update:eslint-docs": "eslint-doc-generator"
+		"update:eslint-docs": "eslint-doc-generator --rule-doc-section-options false"
 	},
 	"dependencies": {
 		"@typescript-eslint/utils": "^8.61.0",
-		"micromatch": "^4.0.8",
-		"requireindex": "^1.2.0"
+		"micromatch": "^4.0.8"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
