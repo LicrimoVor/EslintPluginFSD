@@ -20,7 +20,7 @@ export const rules: Rule.RuleModule = {
 		type: "problem",
 		defaultOptions: [{}],
 		docs: {
-			description: "Feature sliced relative path checker",
+			description: "Проверяет относительные пути внутри одного FSD-слайса",
 			recommended: false,
 			url: undefined,
 		},

@@ -58,12 +58,12 @@ TODO: Run eslint-doc-generator to generate the configs list (or delete this sect
 
 🔧 Automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/user-guide/command-line-interface#--fix).
 
-| Name                                         | Description                                  | 🔧 |
-| :------------------------------------------- | :------------------------------------------- | :- |
-| [layer-checker](docs/rules/layer-checker.md) | Проверяет импорт по уровню доступа FSD       |    |
-| [order-imports](docs/rules/order-imports.md) | Checks the import sequence                   | 🔧 |
-| [path-checker](docs/rules/path-checker.md)   | Feature sliced relative path checker         | 🔧 |
-| [public-import](docs/rules/public-import.md) | Checking the import from the index.ts public | 🔧 |
+| Name                                         | Description                                           | 🔧 |
+| :------------------------------------------- | :---------------------------------------------------- | :- |
+| [layer-checker](docs/rules/layer-checker.md) | Проверяет импорт по уровню доступа FSD                |    |
+| [order-imports](docs/rules/order-imports.md) | Проверяет порядок импортов                            | 🔧 |
+| [path-checker](docs/rules/path-checker.md)   | Проверяет относительные пути внутри одного FSD-слайса | 🔧 |
+| [public-import](docs/rules/public-import.md) | Проверяет импорт через public API слайса              | 🔧 |
 
 <!-- end auto-generated rules list -->
 

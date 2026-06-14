@@ -11,6 +11,7 @@ type ImportClass = keyof typeof importPriority;
 
 type ImportEntry = {
 	node: TSESTree.ImportDeclaration;
+	classPriority: ImportClass;
 	range: TSESTree.Range;
 };
 
@@ -27,7 +28,7 @@ export const rules: Rule.RuleModule = {
 		type: "layout",
 		defaultOptions: [{}],
 		docs: {
-			description: "Checks the import sequence",
+			description: "Проверяет порядок импортов",
 			recommended: false,
 		},
 		fixable: "code",
@@ -65,20 +66,32 @@ export const rules: Rule.RuleModule = {
 		let priorityMax = 0;
 		let nodeMax: ImportReport | undefined;
 
-		const importDict = createImportDict();
+		const importEntries: ImportEntry[] = [];
 
 		return {
 			"Program:exit": (node) => {
 				if (nodeMax) {
-					const { range, orderCode } = orderedImports(importDict);
-					const canFix = isCanFix(node as unknown as TSESTree.Program);
+					const program = node as unknown as TSESTree.Program;
+					const importGroup = getContiguousImportGroup(
+						program,
+						importEntries,
+						nodeMax.node,
+					);
+					const fixData =
+						importGroup.length > 1
+							? orderedImports(entriesToImportDict(importGroup))
+							: undefined;
 
 					context.report({
 						node: nodeMax.node as unknown as Rule.Node,
 						messageId: "invalidOrder",
 						data: nodeMax.data,
-						fix: canFix
-							? (fixer) => fixer.replaceTextRange(range, orderCode)
+						fix: fixData
+							? (fixer) =>
+									fixer.replaceTextRange(
+										fixData.range,
+										fixData.orderCode,
+									)
 							: undefined,
 					});
 				}
@@ -87,6 +100,7 @@ export const rules: Rule.RuleModule = {
 				const importNode = node as unknown as TSESTree.ImportDeclaration;
 				const importWithAlias = importNode.source.value;
 				let importTo = importWithAlias;
+
 				if (alias) {
 					const importToMassive = importWithAlias.split(`${alias}/`);
 					importTo =
@@ -94,10 +108,12 @@ export const rules: Rule.RuleModule = {
 							? importToMassive[1]
 							: importToMassive[0];
 				}
+
 				const classPriority = defineClassPriorityImport(importTo);
 				const priorityNow = importPriority[classPriority];
-				importDict[classPriority].push({
+				importEntries.push({
 					node: importNode,
+					classPriority,
 					range: importNode.range,
 				});
 
@@ -212,7 +228,7 @@ function orderedImports(importDict: Record<ImportClass, ImportEntry[]>): {
 } {
 	const importClasses = Object.keys(importPriority) as ImportClass[];
 	const orderCode: string[] = [];
-	const range: TSESTree.Range = [0, 0];
+	const range: TSESTree.Range = [Number.POSITIVE_INFINITY, 0];
 
 	for (const importClass of importClasses) {
 		const importList = importDict[importClass];
@@ -220,12 +236,15 @@ function orderedImports(importDict: Record<ImportClass, ImportEntry[]>): {
 		for (const importEntry of importList) {
 			orderCode.push(createImport(importEntry.node));
 
+			if (importEntry.range[0] < range[0]) {
+				range[0] = importEntry.range[0];
+			}
 			if (importEntry.range[1] > range[1]) {
 				range[1] = importEntry.range[1];
 			}
 		}
 
-		if (importClass === "library" || importClass === "publicOther") {
+		if (shouldAddGroupSeparator(importClass, importClasses, importDict)) {
 			orderCode.push("");
 		}
 	}
@@ -236,18 +255,76 @@ function orderedImports(importDict: Record<ImportClass, ImportEntry[]>): {
 	return { orderCode: orderCode.join("\n"), range };
 }
 
-function isCanFix(nodes: TSESTree.Program): boolean {
-	let endImports = false;
-	return !nodes.body.some((node) => {
-		if (node.type !== "ImportDeclaration") {
-			endImports = true;
+function shouldAddGroupSeparator(
+	importClass: ImportClass,
+	importClasses: ImportClass[],
+	importDict: Record<ImportClass, ImportEntry[]>,
+): boolean {
+	if (importClass === "library") {
+		return importDict.library.length > 0;
+	}
+
+	if (importClass !== "publicOther") {
+		return false;
+	}
+
+	const hasPreviousImports = importClasses
+		.slice(0, importClasses.indexOf(importClass) + 1)
+		.some((className) => importDict[className].length > 0);
+	const hasFollowingImports = importClasses
+		.slice(importClasses.indexOf(importClass) + 1)
+		.some((className) => importDict[className].length > 0);
+
+	return hasPreviousImports && hasFollowingImports;
+}
+
+function entriesToImportDict(
+	importEntries: ImportEntry[],
+): Record<ImportClass, ImportEntry[]> {
+	const importDict = createImportDict();
+
+	for (const importEntry of importEntries) {
+		importDict[importEntry.classPriority].push(importEntry);
+	}
+
+	return importDict;
+}
+
+function getContiguousImportGroup(
+	program: TSESTree.Program,
+	importEntries: ImportEntry[],
+	targetNode: TSESTree.ImportDeclaration,
+): ImportEntry[] {
+	const groups: TSESTree.ImportDeclaration[][] = [];
+	let currentGroup: TSESTree.ImportDeclaration[] = [];
+
+	for (const statement of program.body) {
+		if (statement.type === "ImportDeclaration") {
+			currentGroup.push(statement);
+			continue;
 		}
 
-		if (endImports && node.type === "ImportDeclaration") {
-			return true;
+		if (currentGroup.length > 0) {
+			groups.push(currentGroup);
+			currentGroup = [];
 		}
-		return false;
-	});
+	}
+
+	if (currentGroup.length > 0) {
+		groups.push(currentGroup);
+	}
+
+	const targetGroup = groups.find((group) =>
+		group.some((node) => node.range[0] === targetNode.range[0]),
+	);
+
+	if (!targetGroup) {
+		return [];
+	}
+
+	return importEntries.filter((entry) =>
+		targetGroup.some((node) => node.range[0] === entry.node.range[0]),
+	);
 }
 
 function createImport(node: TSESTree.ImportDeclaration): string {

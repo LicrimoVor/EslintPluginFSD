@@ -7,7 +7,7 @@ exports.rules = {
         type: "layout",
         defaultOptions: [{}],
         docs: {
-            description: "Checks the import sequence",
+            description: "Проверяет порядок импортов",
             recommended: false,
         },
         fixable: "code",
@@ -42,18 +42,21 @@ exports.rules = {
         let classPriorityMax;
         let priorityMax = 0;
         let nodeMax;
-        const importDict = createImportDict();
+        const importEntries = [];
         return {
             "Program:exit": (node) => {
                 if (nodeMax) {
-                    const { range, orderCode } = orderedImports(importDict);
-                    const canFix = isCanFix(node);
+                    const program = node;
+                    const importGroup = getContiguousImportGroup(program, importEntries, nodeMax.node);
+                    const fixData = importGroup.length > 1
+                        ? orderedImports(entriesToImportDict(importGroup))
+                        : undefined;
                     context.report({
                         node: nodeMax.node,
                         messageId: "invalidOrder",
                         data: nodeMax.data,
-                        fix: canFix
-                            ? (fixer) => fixer.replaceTextRange(range, orderCode)
+                        fix: fixData
+                            ? (fixer) => fixer.replaceTextRange(fixData.range, fixData.orderCode)
                             : undefined,
                     });
                 }
@@ -71,8 +74,9 @@ exports.rules = {
                 }
                 const classPriority = defineClassPriorityImport(importTo);
                 const priorityNow = importPriority[classPriority];
-                importDict[classPriority].push({
+                importEntries.push({
                     node: importNode,
+                    classPriority,
                     range: importNode.range,
                 });
                 if (priorityNow > priorityMax) {
@@ -167,16 +171,19 @@ function createImportDict() {
 function orderedImports(importDict) {
     const importClasses = Object.keys(importPriority);
     const orderCode = [];
-    const range = [0, 0];
+    const range = [Number.POSITIVE_INFINITY, 0];
     for (const importClass of importClasses) {
         const importList = importDict[importClass];
         for (const importEntry of importList) {
             orderCode.push(createImport(importEntry.node));
+            if (importEntry.range[0] < range[0]) {
+                range[0] = importEntry.range[0];
+            }
             if (importEntry.range[1] > range[1]) {
                 range[1] = importEntry.range[1];
             }
         }
-        if (importClass === "library" || importClass === "publicOther") {
+        if (shouldAddGroupSeparator(importClass, importClasses, importDict)) {
             orderCode.push("");
         }
     }
@@ -185,17 +192,49 @@ function orderedImports(importDict) {
     }
     return { orderCode: orderCode.join("\n"), range };
 }
-function isCanFix(nodes) {
-    let endImports = false;
-    return !nodes.body.some((node) => {
-        if (node.type !== "ImportDeclaration") {
-            endImports = true;
-        }
-        if (endImports && node.type === "ImportDeclaration") {
-            return true;
-        }
+function shouldAddGroupSeparator(importClass, importClasses, importDict) {
+    if (importClass === "library") {
+        return importDict.library.length > 0;
+    }
+    if (importClass !== "publicOther") {
         return false;
-    });
+    }
+    const hasPreviousImports = importClasses
+        .slice(0, importClasses.indexOf(importClass) + 1)
+        .some((className) => importDict[className].length > 0);
+    const hasFollowingImports = importClasses
+        .slice(importClasses.indexOf(importClass) + 1)
+        .some((className) => importDict[className].length > 0);
+    return hasPreviousImports && hasFollowingImports;
+}
+function entriesToImportDict(importEntries) {
+    const importDict = createImportDict();
+    for (const importEntry of importEntries) {
+        importDict[importEntry.classPriority].push(importEntry);
+    }
+    return importDict;
+}
+function getContiguousImportGroup(program, importEntries, targetNode) {
+    const groups = [];
+    let currentGroup = [];
+    for (const statement of program.body) {
+        if (statement.type === "ImportDeclaration") {
+            currentGroup.push(statement);
+            continue;
+        }
+        if (currentGroup.length > 0) {
+            groups.push(currentGroup);
+            currentGroup = [];
+        }
+    }
+    if (currentGroup.length > 0) {
+        groups.push(currentGroup);
+    }
+    const targetGroup = groups.find((group) => group.some((node) => node.range[0] === targetNode.range[0]));
+    if (!targetGroup) {
+        return [];
+    }
+    return importEntries.filter((entry) => targetGroup.some((node) => node.range[0] === entry.node.range[0]));
 }
 function createImport(node) {
     const source = node.source.value;

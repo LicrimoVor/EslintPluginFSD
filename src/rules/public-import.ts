@@ -33,7 +33,7 @@ export const rules: Rule.RuleModule = {
 		type: "problem",
 		defaultOptions: [{}],
 		docs: {
-			description: "Checking the import from the index.ts public",
+			description: "Проверяет импорт через public API слайса",
 			recommended: false,
 		},
 		fixable: "code",

@@ -1,6 +1,6 @@
 {
 	"name": "eslint-plugin-lkx-fsd",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"description": " ",
 	"keywords": [
 		"eslint",
@@ -23,7 +23,7 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
-		"lint": "npm-run-all \"lint:*\"",
+		"lint": "npm-run-all \"lint:js\"",
 		"lint:eslint-docs": "npm-run-all \"update:eslint-docs -- --check\"",
 		"lint:js": "eslint .",
 		"prepack": "npm run build",

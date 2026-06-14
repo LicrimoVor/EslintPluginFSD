@@ -4,12 +4,34 @@
 
 <!-- end auto-generated rule header -->
 
-📝 Проверяет импорт по уровню доступа FSD.
+## Описание
 
-<!-- end auto-generated rule header -->
+Правило запрещает импортировать вышележащие слои FSD из нижележащих. Например, `features` не должен импортировать `widgets`, а `entities` не должен импортировать `features`.
 
-## Rule Details
+## Incorrect
+
+```ts
+// файл: src/features/article/ui/Article.tsx
+import WidgetArticle from "widgets/Article";
+```
+
+```ts
+// файл: src/entities/article/model/article.ts
+import CreateArticle from "@/features/CreateArticle";
+```
+
+## Correct
+
+```ts
+// файл: src/features/article/ui/Article.tsx
+import { Article } from "entities/Article";
+```
+
+```ts
+// файл: src/widgets/article/ui/ArticleWidget.tsx
+import CreateArticle from "@/features/CreateArticle";
+```
 
 ### Options
 
-- `alias`: Alias used for absolute imports.
+- `alias`: алиас для абсолютных импортов, например `"@"`.

@@ -1,19 +1,34 @@
 # lkx-fsd/path-checker
 
-📝 Feature sliced relative path checker.
+📝 Проверяет относительные пути внутри одного FSD-слайса.
 
 🔧 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
 
 <!-- end auto-generated rule header -->
 
-📝 Feature sliced relative path checker.
+## Описание
 
-🔧 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
+Если файл импортирует модуль из того же слоя и того же слайса, путь должен быть относительным. Это помогает не смешивать публичный API с внутренними импортами одного слайса.
 
-<!-- end auto-generated rule header -->
+## Incorrect
 
-## Rule Details
+```ts
+// файл: src/entities/Article/ui/ArticleCard.tsx
+import { articleReducer } from "@/entities/Article/model/slice/articleSlice";
+```
+
+```ts
+// файл: src/entities/Article/ui/ArticleCard.tsx
+import { articleReducer } from "entities/Article/model/slice/articleSlice";
+```
+
+## Correct
+
+```ts
+// файл: src/entities/Article/ui/ArticleCard.tsx
+import { articleReducer } from "../model/slice/articleSlice";
+```
 
 ### Options
 
-- `alias`: Alias used for absolute imports.
+- `alias`: алиас для абсолютных импортов, например `"@"`.

@@ -1,27 +1,50 @@
 # lkx-fsd/public-import
 
-📝 Checking the import from the index.ts public.
+📝 Проверяет импорт через public API слайса.
 
 🔧 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
 
 <!-- end auto-generated rule header -->
 
-📝 Checking the import from the index.ts public.
+## Описание
 
-🔧 This rule is automatically fixable by the [`--fix` CLI option](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix).
+Правило запрещает импортировать внутренние файлы чужого FSD-слайса напрямую. Вместо этого нужно импортировать из public API слайса.
 
-<!-- end auto-generated rule header -->
+Type-only импорты не считаются нарушением:
 
-## Rule Details
+```ts
+import type { Article } from "@/entities/Article/model/types/article";
+import { type ArticleSchema } from "@/entities/Article/model/types/article";
+```
+
+## Incorrect
+
+```ts
+import { Article } from "@/entities/Article/ui/Article/Article";
+```
+
+```ts
+import { classNames } from "@/shared/lib/classNames/classNames";
+```
+
+## Correct
+
+```ts
+import { Article } from "@/entities/Article";
+```
+
+```ts
+import { classNames } from "@/shared/lib/classNames";
+```
 
 ### Options
 
-- `alias`: Alias used for absolute imports.
-- `otherIgnoreLayer`: Layers ignored for secondary public API checks.
-- `layersPlusOne`: Layers that include one extra public API segment.
-- `otherPublicImport`: Secondary public API segment name.
-- `otherPublicPatterns`: Filename patterns allowed to import secondary public APIs.
-- `sharedEnclosure`: Shared slices with enclosed public APIs.
-- `widgetEnclosure`: Widget slices with enclosed public APIs.
-- `featuresEnclosure`: Feature slices with enclosed public APIs.
-- `pageEnclosure`: Page slices with enclosed public APIs.
+- `alias`: алиас для абсолютных импортов, например `"@"`.
+- `otherIgnoreLayer`: слои, которые нужно игнорировать при проверке дополнительного public API.
+- `layersPlusOne`: слои, у которых public API находится на один сегмент глубже.
+- `otherPublicImport`: имя дополнительного public API, например `"testing"`.
+- `otherPublicPatterns`: glob-паттерны файлов, где разрешен дополнительный public API.
+- `sharedEnclosure`: слайсы `shared` с вложенным public API.
+- `widgetEnclosure`: слайсы `widgets` с вложенным public API.
+- `featuresEnclosure`: слайсы `features` с вложенным public API.
+- `pageEnclosure`: слайсы `pages` с вложенным public API.
